@@ -1,0 +1,59 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Action\:
+        resource: '../src/Action'
+        public: true
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    App\Security\Voter\Extension\:
+        resource: '../src/Security/Voter/Extension/*'
+        public: false
+        autoconfigure: false
+        tags: [ 'app.voter' ]
+
+    App\EventListener\ValidateSubscriber\Extension\:
+        resource: '../src/EventListener/ValidateSubscriber/Extension/*'
+        tags: [ 'app.validate_subscriber' ]
+
+    App\Security\Voter\MainVoter:
+        public: false
+        tags: [{ name: 'security.voter' }]
+
+    App\Doctrine\Extensions\:
+        resource: '../src/Doctrine/Extensions/*'
+        tags: [{ name: 'app.current_user_extension' }]
+
+
+    # Listener calling voters on each REST request
+    App\EventListener\Security\AclListener:
+        public: false
+        tags: [{ name: 'kernel.event_listener', event: 'kernel.view', method: 'onKernelView', priority: 100 }]

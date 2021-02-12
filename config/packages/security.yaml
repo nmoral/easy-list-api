@@ -1,0 +1,46 @@
+security:
+    encoders:
+        App\Entity\Account\User:
+            algorithm: argon2i
+    providers:
+        # used to reload user from session & other features (e.g. switch_user)
+        user_provider:
+            id: App\Security\UserProvider
+
+    firewalls:
+        dev:
+            pattern: ^/_(profiler|wdt)
+            security: false
+        account_creation:
+            pattern: ^/api/new_account$
+            stateless: true
+            anonymous: true
+        login:
+            pattern: ^/api/login
+            stateless: true
+            anonymous: true
+            provider: user_provider
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api:
+            pattern: ^/api
+            stateless: true
+            anonymous: true
+            provider: user_provider
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+        main:
+            anonymous: true
+
+    access_decision_manager:
+        strategy: affirmative
+        allow_if_all_abstain: false
+
+    access_control:
+        - { path: ^/api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
+        - { path: ^/api/new_account$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/authentication_token, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

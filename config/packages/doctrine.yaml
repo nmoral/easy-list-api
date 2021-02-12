@@ -1,0 +1,24 @@
+doctrine:
+    dbal:
+        # configure these for your database server
+        driver: 'pdo_mysql'
+        server_version: 'mariadb-10.3.7' # Needed to avoid doctrine to make unnecessary operations at each update on nullable fields
+        charset: utf8mb4
+        user: '%env(resolve:DB_USER)%'
+        password: '%env(resolve:DB_PASSWORD)%'
+        dbname: '%env(resolve:DB_NAME)%'
+        host: '%env(resolve:DB_HOST)%'
+        default_table_options:
+            charset: utf8mb4
+            collate: utf8mb4_unicode_ci
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
