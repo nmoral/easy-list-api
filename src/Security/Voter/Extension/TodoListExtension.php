@@ -3,27 +3,17 @@
 namespace App\Security\Voter\Extension;
 
 use App\Entity\Account\User;
-use App\Entity\TodoList\ListManager;
 use App\Entity\TodoList\TodoList;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use function foo\func;
 
 class TodoListExtension extends AbstractExtension implements VoterExtensionInterface
 {
-
-    #[Pure] public function __construct()
+    public function __construct()
     {
         parent::__construct(TodoList::class);
     }
 
-    /**
-     * @param $attribute
-     * @param TodoList $subject
-     * @param TokenInterface $token
-     * @return bool
-     */
-    protected function onRead($attribute, $subject, TokenInterface $token): bool
+    protected function onRead(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         /** @var User $user */
         $user = $token->getUser();
@@ -31,13 +21,7 @@ class TodoListExtension extends AbstractExtension implements VoterExtensionInter
         return $subject->isWatcher($user);
     }
 
-    /**
-     * @param $attribute
-     * @param TodoList $subject
-     * @param TokenInterface $token
-     * @return bool
-     */
-    protected function onUpdate($attribute, $subject, TokenInterface $token): bool
+    protected function onUpdate(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         /** @var User $user */
         $user = $token->getUser();
@@ -45,18 +29,12 @@ class TodoListExtension extends AbstractExtension implements VoterExtensionInter
         return $subject->isModifier($user);
     }
 
-    protected function onCreate($attribute, $subject, TokenInterface $token): bool
+    protected function onCreate(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         return true;
     }
 
-    /**
-     * @param $attribute
-     * @param TodoList $subject
-     * @param TokenInterface $token
-     * @return bool
-     */
-    protected function onDelete($attribute, $subject, TokenInterface $token): bool
+    protected function onDelete(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         /** @var User $user */
         $user = $token->getUser();

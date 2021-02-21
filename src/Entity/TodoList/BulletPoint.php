@@ -2,62 +2,14 @@
 
 namespace App\Entity\TodoList;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Account\User;
 use App\Entity\AbstractEntity;
-use Doctrine\Common\Collections\Collection;
+use App\Entity\Account\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity
  * @ORM\Table
- *
- * @ApiResource(
- *     collectionOperations= {
- *          "post": {
- *              "denormalization_context": {
- *                  "groups": {
- *                      "bullet_point_create"
- *                  }
- *              },
- *              "normalization_context": {
- *                  "groups": {
- *                      "bullet_point_details", "details"
- *                  }
- *              }
- *          },
- *          "get": {
- *              "normalization_context": {
- *                  "groups": {
- *                      "bullet_point_list", "list"
- *                  }
- *              }
- *          }
- *      },
- *     itemOperations= {
- *          "put": {
- *              "denormalization_context": {
- *                  "groups": {
- *                      "bullet_point_edit", "edit"
- *                  }
- *              },
- *              "normalization_context": {
- *                  "groups": {
- *                      "bullet_point_details", "details"
- *                  }
- *              }
- *          },
- *          "get": {
- *              "normalization_context": {
- *                  "groups": {
- *                      "bullet_point_details", "details"
- *                  }
- *              }
- *          },
- *          "delete"
- *     }
- * )
  */
 class BulletPoint extends AbstractEntity
 {

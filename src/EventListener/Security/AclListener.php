@@ -22,9 +22,8 @@ final class AclListener
     ) {
     }
 
-    public function onKernelView(ViewEvent $event)
+    public function onKernelView(ViewEvent $event): void
     {
-        // Only evaluate entities, or paginator instance
         $object = $event->getControllerResult();
 
         if (!$object instanceof AbstractEntity && !$object instanceof \Traversable) {

@@ -1,9 +1,10 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
 /**
  * Returns an authorized API client.
+ *
  * @return Google_Client the authorized client object
  */
 function getClient()
@@ -35,7 +36,7 @@ function getClient()
             // Request authorization from the user.
             $authUrl = $client->createAuthUrl();
             printf("Open the following link in your browser:\n%s\n", $authUrl);
-            print 'Enter verification code: ';
+            echo 'Enter verification code: ';
             $authCode = trim(fgets(STDIN));
 
             // Exchange authorization code for an access token.
@@ -53,9 +54,9 @@ function getClient()
         }
         file_put_contents($tokenPath, json_encode($client->getAccessToken()));
     }
+
     return $client;
 }
-
 
 // Get the API client and construct the service object.
 $client = getClient();
@@ -63,19 +64,19 @@ $service = new Google_Service_Calendar($client);
 
 // Print the next 10 events on the user's calendar.
 $calendarId = 'primary';
-$optParams = array(
+$optParams = [
     'maxResults' => 10,
     'orderBy' => 'startTime',
     'singleEvents' => true,
     'timeMin' => date('c'),
-);
+];
 $results = $service->events->listEvents($calendarId, $optParams);
 $events = $results->getItems();
 
 if (empty($events)) {
-    print "No upcoming events found.\n";
+    echo "No upcoming events found.\n";
 } else {
-    print "Upcoming events:\n";
+    echo "Upcoming events:\n";
     foreach ($events as $event) {
         $start = $event->start->dateTime;
         if (empty($start)) {

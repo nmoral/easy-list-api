@@ -12,7 +12,7 @@ security:
             pattern: ^/_(profiler|wdt)
             security: false
         account_creation:
-            pattern: ^/api/new_account$
+            pattern: ^/api/user/create$
             stateless: true
             anonymous: true
         login:
@@ -40,7 +40,6 @@ security:
         allow_if_all_abstain: false
 
     access_control:
-        - { path: ^/api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
-        - { path: ^/api/new_account$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/user, roles: IS_AUTHENTICATED_ANONYMOUSLY, method: 'post'}
         - { path: ^/authentication_token, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

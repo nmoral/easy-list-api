@@ -1,10 +1,9 @@
 <?php
 
-
 namespace App\Security;
 
 use App\Entity\Account\User;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -17,11 +16,12 @@ class UserProvider implements UserProviderInterface
      */
     private string $className = User::class;
 
-    public function __construct(private ManagerRegistry $managerRegistry)
-    {
+    public function __construct(
+        private UserRepository $repository
+    ) {
     }
 
-    public function loadUserByUsername(string $username)
+    public function loadUserByUsername(string $username): User | UserInterface
     {
         $user = $this->findUser($username);
         if (!$user) {
@@ -31,9 +31,9 @@ class UserProvider implements UserProviderInterface
         return $user;
     }
 
-    private function findUser($username)
+    private function findUser(string $username): ?User
     {
-        return $this->managerRegistry->getRepository($this->className)->findOneBy(
+        return $this->repository->findOneBy(
             [
                 'username' => $username,
             ]
@@ -51,6 +51,6 @@ class UserProvider implements UserProviderInterface
 
     public function supportsClass(string $class)
     {
-       return $this->className === $class;
+        return $this->className === $class;
     }
 }

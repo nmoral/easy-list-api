@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\EventListener;
-
 
 interface SubscriberExtensionInterface
 {
@@ -10,5 +8,4 @@ interface SubscriberExtensionInterface
      * @return class-string
      */
     public function getSupportedClass(): string;
-
 }

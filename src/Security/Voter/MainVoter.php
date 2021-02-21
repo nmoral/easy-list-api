@@ -33,13 +33,15 @@ class MainVoter extends Voter
      */
     private array $voter = [];
 
-
-    public function addExtension(VoterExtensionInterface $voter)
+    public function addExtension(VoterExtensionInterface $voter): void
     {
         $this->voter[$voter->getSupportedClass()] = $voter;
     }
 
-    protected function supports(string $attribute, $subject)
+    /**
+     * {@inheritdoc}
+     */
+    protected function supports(string $attribute, $subject): bool
     {
         if ($subject instanceof \Traversable) {
             foreach ($subject as $item) {
@@ -51,7 +53,10 @@ class MainVoter extends Voter
         return isset($this->voter[get_class($subject)]);
     }
 
-    public function vote(TokenInterface $token, $subject, array $attributes)
+    /**
+     * @param mixed[] $attributes
+     */
+    public function vote(TokenInterface $token, mixed $subject, array $attributes): int
     {
         if ($subject instanceof \Traversable) {
             foreach ($subject as $item) {
@@ -67,9 +72,8 @@ class MainVoter extends Voter
         return parent::vote($token, $subject, $attributes);
     }
 
-
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
-       return $this->voter[get_class($subject)]->voteOnAttribute($attribute, $subject, $token);
+        return $this->voter[get_class($subject)]->voteOnAttribute($attribute, $subject, $token);
     }
 }

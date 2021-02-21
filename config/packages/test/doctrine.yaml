@@ -1,0 +1,19 @@
+doctrine:
+    dbal:
+        # configure these for your database server
+        driver: 'pdo_pgsql'
+        charset: utf8
+        user: '%env(resolve:DB_USER)%'
+        password: '%env(resolve:DB_PASSWORD)%'
+        dbname: 'test_db'
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/tests/Resources/Entity'
+                prefix: 'App\Tests\Resources\Entity'
+                alias: App

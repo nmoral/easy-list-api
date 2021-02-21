@@ -2,13 +2,11 @@
 
 namespace App\Entity\TodoList;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Entity\Account\User;
 use App\Entity\AbstractEntity;
+use App\Entity\Account\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -17,52 +15,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Entity
  * @ORM\Table
- *
- * @ApiResource(
- *     collectionOperations= {
- *          "post": {
- *              "denormalization_context": {
- *                  "groups": {
- *                      "todo_list_create"
- *                  }
- *              },
- *              "normalization_context": {
- *                  "groups": {
- *                      "todo_list_details", "details"
- *                  }
- *              }
- *          },
- *          "get": {
- *              "normalization_context": {
- *                  "groups": {
- *                      "todo_list_list", "list"
- *                  }
- *              }
- *          }
- *      },
- *     itemOperations= {
- *          "put": {
- *              "denormalization_context": {
- *                  "groups": {
- *                      "todo_list_edit", "edit"
- *                  }
- *              },
- *              "normalization_context": {
- *                  "groups": {
- *                      "todo_list_details", "details"
- *                  }
- *              }
- *          },
- *          "get": {
- *              "normalization_context": {
- *                  "groups": {
- *                      "todo_list_details", "details"
- *                  }
- *              }
- *          },
- *          "delete"
- *     }
- * )
  */
 class TodoList extends AbstractEntity
 {
@@ -93,7 +45,7 @@ class TodoList extends AbstractEntity
     private ?string $description;
 
     /**
-     * @var Collection<BulletPoint>
+     * @var Collection<int, BulletPoint>
      * @ORM\OneToMany(targetEntity="App\Entity\TodoList\BulletPoint", mappedBy="todoList")
      *
      * @Groups({
@@ -103,13 +55,13 @@ class TodoList extends AbstractEntity
     private Collection $bulletPoints;
 
     /**
-     * @var Collection<ListManager>
+     * @var Collection<int, ListManager>
      * @ORM\OneToMany(targetEntity="App\Entity\TodoList\ListManager", mappedBy="list", cascade={"persist", "remove"})
      * @Assert\Valid
      */
     private Collection $listManagers;
 
-    #[Pure] public function __construct()
+    public function __construct()
     {
         $this->bulletPoints = new ArrayCollection();
         $this->listManagers = new ArrayCollection();
@@ -139,6 +91,9 @@ class TodoList extends AbstractEntity
         return $this;
     }
 
+    /**
+     * @return Collection<int, BulletPoint>
+     */
     public function getBulletPoints(): Collection
     {
         return $this->bulletPoints;
@@ -181,6 +136,9 @@ class TodoList extends AbstractEntity
         return $this;
     }
 
+    /**
+     * @return Collection<int, ListManager>
+     */
     public function getListManagers(): Collection
     {
         return $this->listManagers;
@@ -205,22 +163,25 @@ class TodoList extends AbstractEntity
         ]);
 
         return 0 !== $filteredCollection->count();
-
     }
 
     public function isOwner(User $user): bool
     {
         $filteredCollection = $this->filterBy($user, [
-            ListManager::STATUS_OWNER
+            ListManager::STATUS_OWNER,
         ]);
 
         return 0 !== $filteredCollection->count();
-
     }
 
+    /**
+     * @param string[] $right
+     *
+     * @return Collection<int, ListManager>
+     */
     private function filterBy(User $user, array $right = []): Collection
     {
-        return $this->getListManagers()->filter(function(ListManager $manager) use ($user, $right) {
+        return $this->getListManagers()->filter(function (ListManager $manager) use ($user, $right) {
             return $manager->hasRight($user, $right);
         });
     }

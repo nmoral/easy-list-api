@@ -2,12 +2,13 @@
 
 namespace App\EventListener\ValidateSubscriber\Extension;
 
+use App\Event\PostValidateEvent;
+use App\Event\PreValidateEvent;
 use App\EventListener\SubscriberExtensionInterface;
-use Symfony\Component\HttpKernel\Event\ViewEvent;
 
 interface ValidateSubscriberInterface extends SubscriberExtensionInterface
 {
-    public function preValidate(ViewEvent $event);
+    public function preValidate(PreValidateEvent $event): void;
 
-    public function postValidate(ViewEvent $event);
+    public function postValidate(PostValidateEvent $event): void;
 }

@@ -1,16 +1,20 @@
 version: "3.1"
 services:
-  mysql:
-    image: mysql:5.6
-    container_name: ${PROJECT_NAME}-mysql
+  postgres:
+    image: postgres
+    container_name: ${PROJECT_NAME}-postgres
     volumes:
-      - ./var/docker/database:/var/lib/mysql
+      - ./var/docker/database:/data/postgres
     environment:
-      - MYSQL_DATABASE=${DB_NAME}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/posrgres
+      TZ: Etc/UCT
+      PGTZ: Etc/UCT
     network_mode: bridge
+    ports:
+      - "5432:5432"
 
   webserver:
     image: nginx:alpine
@@ -33,22 +37,9 @@ services:
     working_dir: /application
     network_mode: bridge
     links:
-      - mysql
+      - postgres
     volumes:
       - .:/application
       - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/8.0/fpm/conf.d/99-overrides.ini
     expose:
       - 9000
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: ${PROJECT_NAME}-phpmyadmin
-    environment:
-      - VIRTUAL_HOST=phpmyadmin.${PROJECT_NAME}.local
-      - MYSQL_USERNAME=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - PMA_USERNAME=${DB_USER}
-      - PMA_PASSWORD=${DB_PASSWORD}
-      - PMA_HOSTS=${DB_HOST}
-    links:
-      - mysql
-    network_mode: bridge

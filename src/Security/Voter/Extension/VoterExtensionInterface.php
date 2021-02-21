@@ -6,7 +6,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 interface VoterExtensionInterface
 {
-    public function voteOnAttribute($attribute, $subject, TokenInterface $token): bool;
+    public function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool;
 
     /**
      * @return class-string

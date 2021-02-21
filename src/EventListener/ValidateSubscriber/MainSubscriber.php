@@ -1,42 +1,43 @@
 <?php
 
-
 namespace App\EventListener\ValidateSubscriber;
 
-
-use ApiPlatform\Core\EventListener\EventPriorities;
+use App\Entity\AbstractEntity;
+use App\Event\Event;
+use App\Event\PostValidateEvent;
+use App\Event\PreValidateEvent;
 use App\EventListener\ValidateSubscriber\Extension\ValidateSubscriberInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\ViewEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class MainSubscriber implements EventSubscriberInterface
 {
-    public function __construct(
-        /** @var ValidateSubscriberInterface[] $extensions */
-        private array $extensions = []
-    )
-    {}
+    /** @var ValidateSubscriberInterface[] */
+    private array $extensions;
 
-    public function addExtension(ValidateSubscriberInterface $subscriber)
+    public function __construct()
+    {
+        $this->extensions = [];
+    }
+
+    public function addExtension(ValidateSubscriberInterface $subscriber): void
     {
         $this->extensions[$subscriber->getSupportedClass()] = $subscriber;
     }
 
-
-    public static function getSubscribedEvents()
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::VIEW => [
-                'preValidate', EventPriorities::PRE_VALIDATE,
-                'postValidate', EventPriorities::POST_VALIDATE,
-            ],
+            Event::PRE_VALIDATE_EVENT => 'preValidate',
+            Event::POST_VALIDATE_EVENT => 'postValidate',
         ];
     }
 
-    public function preValidate(ViewEvent $event)
+    public function preValidate(PreValidateEvent $event): void
     {
-        $subject = $event->getControllerResult();
+        $subject = $event->getEntity();
         if (!$this->support($subject)) {
             return;
         }
@@ -44,9 +45,9 @@ class MainSubscriber implements EventSubscriberInterface
         $this->extensions[get_class($subject)]->preValidate($event);
     }
 
-    public function postValidate(ViewEvent $event)
+    public function postValidate(PostValidateEvent $event): void
     {
-        $subject = $event->getControllerResult();
+        $subject = $event->getEntity();
         if (!$this->support($subject)) {
             return;
         }
@@ -54,7 +55,7 @@ class MainSubscriber implements EventSubscriberInterface
         $this->extensions[get_class($subject)]->postValidate($event);
     }
 
-    private function support($subject): bool
+    private function support(AbstractEntity $subject): bool
     {
         return isset($this->extensions[get_class($subject)]);
     }
